@@ -1,2 +1,4 @@
 .env
 .venv
+goolglesheet-connect.json
+*.csv
