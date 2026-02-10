@@ -10,7 +10,11 @@ columns = ['Campaign Name', 'KOL Type', 'Name', 'Request', 'Video link', 'Type',
 
 def main():
     try:
-        source, tabs_list, destination, destination_tab, start_date, end_date, destination_cell = get_details(google_sheet_name, tab)
+        source, tabs_list, destination, destination_tab, start_date, end_date, destination_cell = get_details(
+                                                                                                        con_engine, 
+                                                                                                        google_sheet_name, 
+                                                                                                        tab
+                                                                                                        )
 
         raw_data = extract(
             con_engine=con_engine,
@@ -29,7 +33,8 @@ def main():
             con_engine=con_engine,
             clean_dataframe=clean_data,
             google_sheet_name=destination,
-            tab_name=destination_tab
+            tab_name=destination_tab,
+            cell=destination_cell
         )
     except Exception as e:
         print(f'Error: {e}')

@@ -103,7 +103,7 @@ def transform (raw_data_list: list, headers: list, start_date, end_date):
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_name: str):
+def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_name: str, cell: str):
     try:
     # Connecting to Google sheet    
         sh = con_engine.open(google_sheet_name)
@@ -113,7 +113,7 @@ def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_
         wrksht = sh.worksheet(tab_name)
         wrksht.clear()
         final_data_to_upload = [[col for col in clean_dataframe.columns]] + clean_dataframe.values.tolist()
-        wrksht.update(final_data_to_upload, value_input_option='user_entered')
+        wrksht.update(values=final_data_to_upload, value_input_option='user_entered', range_name=cell)
         print('Success: Data Loaded to destination!!!')
     
     except Exception as e:
