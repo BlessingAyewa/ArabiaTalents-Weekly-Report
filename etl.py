@@ -40,7 +40,8 @@ def extract(con_engine, google_sheet_name: str, tabs_list: list):
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 def transform (raw_data_list: list, headers: list, start_date, end_date):
-    try:        
+    try:
+        print(f'Transforming the raw data')        
         df = pd.DataFrame(raw_data_list, columns=headers)
 
         # Convert to datetime objects
@@ -59,7 +60,7 @@ def transform (raw_data_list: list, headers: list, start_date, end_date):
 
         # Select a Specific Date range
         mask_2 = df['Publish Date'].between(start_date, end_date)
-        df[mask_2]
+        df = df[mask_2]
         
         target_cols = [
             'KOL Type', 'Name', 'Request', 'Video link', 'Type', 
@@ -81,7 +82,7 @@ def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_
         sh = con_engine.open(google_sheet_name)
 
         # Loading Data
-        print(f'Loading Data to {google_sheet_name}...')
+        print(f'Loading Data to {google_sheet_name} sheet...')
         wrksht = sh.worksheet(tab_name)
         wrksht.clear()
         final_data_to_upload = [[col for col in clean_dataframe.columns]] + clean_dataframe.values.tolist()
