@@ -39,18 +39,18 @@ def extract(con_engine, google_sheet_name: str, tabs_list: list):
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-def transform (raw_data_list: list, headers: list):
-    try:
-        # Convert to datetime objects
+def transform (raw_data_list: list, headers: list, start_date, end_date):
+    try:        
         df = pd.DataFrame(raw_data_list, columns=headers)
 
-        # Convert back to string format and fill blanks
+        # Convert to datetime objects
         dates = pd.to_datetime(df['Publish Date'].str.strip(), format='%d/%m/%Y', errors='raise')
 
+        # Convert back to string format and fill blanks
         df['Publish Date'] = dates.dt.strftime('%Y-%m-%d').fillna('')
 
       
-        # Merging request name to main df
+        # Merging request name to df
         request_df = pd.read_csv('request-name.csv')
         df = df.merge(request_df, 'left', left_on=['Campaign Name', 'Request'], right_on=['Campaign', 'Request#'])
 
@@ -58,7 +58,8 @@ def transform (raw_data_list: list, headers: list):
         df.loc[~mask, 'Request'] = df['Request'] + ' - ' + df['Req-Name']
 
         # Select a Specific Date range
-        ...
+        mask_2 = df['Publish Date'].between(start_date, end_date)
+        df[mask_2]
         
         target_cols = [
             'KOL Type', 'Name', 'Request', 'Video link', 'Type', 
@@ -68,3 +69,24 @@ def transform (raw_data_list: list, headers: list):
         return df[target_cols]
     except Exception as e:
         print(f"Error Parsing the file...\n{e}")
+
+
+
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_name: str):
+    try:
+    # Connecting to Google sheet    
+        sh = con_engine.open(google_sheet_name)
+
+        # Loading Data
+        print(f'Loading Data to {google_sheet_name}...')
+        wrksht = sh.worksheet(tab_name)
+        wrksht.clear()
+        final_data_to_upload = [[col for col in clean_dataframe.columns]] + clean_dataframe.values.tolist()
+        wrksht.update(final_data_to_upload, value_input_option = 'user_entered')
+        print('Success: Data Loaded to destination!!!')
+    
+    except Exception as e:
+        print(f'Error loading data to {google_sheet_name}: {e}')
