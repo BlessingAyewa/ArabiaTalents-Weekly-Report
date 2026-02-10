@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pandas gspread tenacity
+          pip install -r requirements.txt
 
       - name: Recreate sensitive files
         run: |
