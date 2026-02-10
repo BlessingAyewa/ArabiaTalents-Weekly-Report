@@ -20,10 +20,8 @@ A Python-based ETL (Extract, Transform, Load) pipeline that automates report gen
 2. **Configuration:** Update the `Intermediate` sheet and `report_details` tab to specify source tabs and date ranges.
 3. **Trigger:**
     * **Manual:** Use the "🚀 ETL Automation" menu in Google Sheets (via Apps Script).
-    * **Scheduled:** Runs automatically based on the cron schedule in the workflow file.
 
 ## 📦 Dependencies
 * `pandas`: For data manipulation and analysis.
 * `gspread`: For Google Sheets API interaction.
 * `tenacity`: For robust error handling and retries.
-* `google-auth`: For service account authentication.
