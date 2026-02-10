@@ -1,0 +1,29 @@
+name: Run Weekly Report ETL
+
+on:
+  workflow_dispatch: # Allows you to run it manually from GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas gspread tenacity
+
+      - name: Recreate sensitive files
+        run: |
+          echo '${{ secrets.GCP_SERVICE_ACCOUNT }}' > goolglesheet-connect.json
+          echo '${{ secrets.REQUEST_NAME_CSV }}' > request-name.csv
+
+      - name: Run ETL Script
+        run: python main.py
