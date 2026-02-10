@@ -4,6 +4,33 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+def get_details(con_engine, google_sheet: str, tab: str):
+    report_details = {}
+    try:
+        print(f"Getting Weekly Report Details from {google_sheet}")
+        gsheet = con_engine.open(google_sheet)
+        details = gsheet.worksheet(tab).get_all_values()
+        for row in details[1:]:
+            report_details[row[0]] = row[1]
+
+        # Assigning values to variables    
+        source = report_details['source']
+        tabs_list = [item.strip() for item in report_details['tabs_list'].split(',')]
+        destination = report_details['destination']
+        destination_tab = report_details['destination_tab']
+        start_date = report_details['start_date']
+        end_date = report_details['end_date']
+        destination_cell = report_details['destination_cell']
+
+        return source, tabs_list, destination, destination_tab, start_date, end_date, destination_cell
+    except Exception as e:
+        print(f'Error Geting Data; {e}')
+
+
+
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 def extract(con_engine, google_sheet_name: str, tabs_list: list):
 
     data_accumulator = []
@@ -41,7 +68,7 @@ def extract(con_engine, google_sheet_name: str, tabs_list: list):
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 def transform (raw_data_list: list, headers: list, start_date, end_date):
     try:
-        print(f'Transforming the raw data')        
+        print(f'Transforming the Raw Data')        
         df = pd.DataFrame(raw_data_list, columns=headers)
 
         # Convert to datetime objects
@@ -82,11 +109,11 @@ def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_
         sh = con_engine.open(google_sheet_name)
 
         # Loading Data
-        print(f'Loading Data to {google_sheet_name} sheet...')
+        print(f'Loading Clean Data to {google_sheet_name} Sheet...')
         wrksht = sh.worksheet(tab_name)
         wrksht.clear()
         final_data_to_upload = [[col for col in clean_dataframe.columns]] + clean_dataframe.values.tolist()
-        wrksht.update(final_data_to_upload, value_input_option = 'user_entered')
+        wrksht.update(final_data_to_upload, value_input_option='user_entered')
         print('Success: Data Loaded to destination!!!')
     
     except Exception as e:

@@ -1,25 +1,17 @@
 import gspread
-from etl import extract, transform, load
+from etl import get_details, extract, transform, load
 
 con_engine = gspread.service_account(filename='goolglesheet-connect.json')
-source = 'January+ February 2026 | PUBGM'
-destination = 'Intermediate'
-destination_tab = 'jan_feb'
-start_date = '2026-02-01'
-end_date = '2026-02-10'
-
-tabs_list = ['NonBr WOW Request', 'Request 0', 'Request 1', 'Request 2', 'Request 3', 
-                    'Request 4', 'Request 6', 'Request 7','Request 8', 'Request 9', 'Request 10', 
-                    'Request 11','Request 12', 'Request 13', 'Request 14',  'Request 15',  'Request 16',
-                    'Request 17','Request 18', 'Request 19', 'Request 20',  'Request 21',  'Request 22',
-                     'Request 23', 'FF January', 'FF February'
-                    ]
+google_sheet_name = 'Intermediate'
+tab = 'report_details'
 
 columns = ['Campaign Name', 'KOL Type', 'Name', 'Request', 'Video link', 'Type', 'Platform', 'Approval', 
            'Publish Date', 'Views', 'Likes', 'Comments', 'Screenshot', 'Trending']
 
 def main():
     try:
+        source, tabs_list, destination, destination_tab, start_date, end_date, destination_cell = get_details(google_sheet_name, tab)
+
         raw_data = extract(
             con_engine=con_engine,
             google_sheet_name=source,
