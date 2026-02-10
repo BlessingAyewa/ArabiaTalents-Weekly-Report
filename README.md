@@ -7,7 +7,7 @@ A Python-based ETL (Extract, Transform, Load) pipeline that automates report gen
 * **Smart Categorization:** Uses `startswith` logic to automatically assign **KOL Types** (NONBR, FF, BR) based on tab names.
 * **Data Cleaning:** Normalizes dates, merges campaign metadata from `request-name.csv`, and filters results by date range.
 * **Resilience:** Built-in retry logic using `tenacity` to handle API rate limits and network blips.
-* **GitHub Actions Integrated:** Runs on a schedule or can be triggered via a custom button in Google Sheets.
+* **GitHub Actions Integrated:** Can be triggered via a custom button in Google Sheets.
 
 ## 🏗 Project Structure
 * `main.py`: The entry point that orchestrates the ETL flow.
