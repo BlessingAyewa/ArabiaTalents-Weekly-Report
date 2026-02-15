@@ -72,10 +72,10 @@ def transform (raw_data_list: list, headers: list, start_date, end_date):
         df = pd.DataFrame(raw_data_list, columns=headers)
 
         # Convert to datetime objects
-        dates = pd.to_datetime(df['Publish Date'].str.strip(), format='%d/%m/%Y', errors='raise')
+        dates = pd.to_datetime(df['Publish Date'].str.strip(), format='%Y-%m-%d', errors='raise')
 
         # Convert back to string format and fill blanks
-        df['Publish Date'] = dates.dt.strftime('%Y-%m-%d').fillna('')
+        #df['Publish Date'] = dates.dt.strftime('%Y-%m-%d').fillna('')
 
       
         # Merging request name to df
