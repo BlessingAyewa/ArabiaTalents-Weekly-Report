@@ -107,7 +107,7 @@ def load(con_engine, clean_dataframe: pd.DataFrame, google_sheet_name: str, tab_
     try:
     # Connecting to Google sheet    
         sh = con_engine.open(google_sheet_name)
-
+        clean_dataframe = clean_dataframe.fillna('')
         # Loading Data
         print(f'Loading Clean Data to {google_sheet_name} Sheet...')
         wrksht = sh.worksheet(tab_name)
